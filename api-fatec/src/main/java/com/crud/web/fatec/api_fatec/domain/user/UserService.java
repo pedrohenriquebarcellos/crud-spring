@@ -15,6 +15,7 @@ public class UserService {
 
     /**
      * Buscar todos os usuários
+     * 
      * @return
      */
     public List<User> getAllUsers() {
@@ -23,6 +24,7 @@ public class UserService {
 
     /**
      * Criar Usuário
+     * 
      * @param user
      * @return
      */
@@ -33,6 +35,7 @@ public class UserService {
 
     /**
      * Buscar usuário por ID
+     * 
      * @param id
      * @return
      */
@@ -42,27 +45,21 @@ public class UserService {
 
     /**
      * Atualizar usuário
+     * 
      * @param id
      * @param newUser
      * @return
      */
     public boolean updateUser(Long id, User newUser) {
-        Optional<User> existingUser = userRepository.findById(id);
-
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            user.setName(newUser.getName());
-            user.setEmail(newUser.getEmail());
-
-            userRepository.save(user);
-            return true;
-        }
-
-        return false;
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        existingUser.setName(newUser.getName());
+        userRepository.save(existingUser);
+        return true;
     }
 
     /**
      * Deletar usuário
+     * 
      * @param id
      * @return
      */

@@ -9,13 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.crud.web.fatec.api_fatec.domain.user.UserService;
 import com.crud.web.fatec.api_fatec.entities.User;
@@ -38,9 +32,37 @@ public class UserController {
      * @return
      */
     @PostMapping("/createUser")
-    public ResponseEntity<User> CreateUser(@RequestBody User user) {
-        var newUser = userService.createUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    public ResponseEntity<Object> CreateUser(@RequestBody User user) {
+        logger.info("Received user: " + user);
+
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            return new ResponseEntity<>("Email is required", HttpStatus.BAD_REQUEST);
+        }
+
+        User savedUser = userService.createUser(user);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    }
+
+    /**
+     * Obter todos os usuários
+     * @return
+     */
+    @GetMapping("/getAllUsers")
+    public List<User> GetAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    /**
+     * Obter usuário por ID
+     * @param id
+     * @return
+     */
+    @GetMapping("/getUserById/{id}")
+    public ResponseEntity<?> GetUserById(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
+
+        return user.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + id + " not found"));
     }
 
     /**
@@ -65,14 +87,14 @@ public class UserController {
      * @return
      */
     @PutMapping("/updateUser/{id}")
-    public ResponseEntity<User> UpdateUser(@RequestBody User updatedUser) {
+    public ResponseEntity<User> UpdateUser(@PathVariable Long id,@RequestBody User updatedUser) {
         for (User user: users) {
-            if (user.getId().equals(updatedUser.getId())) {
-                if (user.getName() != null) {
+            if (user.getId().equals(id)) {
+                if (updatedUser.getName() != null) {
                     user.setName(updatedUser.getName());
                 }
 
-                if (user.getEmail() != null) {
+                if (updatedUser.getEmail() != null) {
                     user.setEmail(updatedUser.getEmail());
                 }
                 
@@ -81,28 +103,6 @@ public class UserController {
         } 
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Obter todos os usuários
-     * @return
-     */
-    @GetMapping("/getAllUsers")
-    public List<User> GetAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    /**
-     * Obter usuário por ID
-     * @param id
-     * @return
-     */
-    @GetMapping("/getUserById/{id}")
-    public ResponseEntity<?> GetUserById(@PathVariable Long id) {
-        Optional<User> user = userService.getUserById(id);
-
-        return user.<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + id + " not found"));
-    }
+    }    
 }
     
