@@ -27,7 +27,8 @@ public class UserService {
      * @return
      */
     public User createUser(User user) {
-        return userRepository.save(user);
+        var userCreated = userRepository.save(user);
+        return userCreated;
     }
 
     /**
@@ -52,6 +53,9 @@ public class UserService {
             User user = existingUser.get();
             user.setName(newUser.getName());
             user.setEmail(newUser.getEmail());
+
+            userRepository.save(user);
+            return true;
         }
 
         return false;
