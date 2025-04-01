@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import com.crud.web.fatec.api_fatec.domain.user.UserService;
 import com.crud.web.fatec.api_fatec.entities.User;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -87,22 +85,16 @@ public class UserController {
      * @return
      */
     @PutMapping("/updateUser/{id}")
-    public ResponseEntity<User> UpdateUser(@PathVariable Long id,@RequestBody User updatedUser) {
-        for (User user: users) {
-            if (user.getId().equals(id)) {
-                if (updatedUser.getName() != null) {
-                    user.setName(updatedUser.getName());
-                }
-
-                if (updatedUser.getEmail() != null) {
-                    user.setEmail(updatedUser.getEmail());
-                }
-                
-                return new ResponseEntity<>(user, HttpStatus.OK);
-            }
-        } 
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }    
+    public ResponseEntity<?> UpdateUser(@RequestBody User updatedUser, @PathVariable Long id) {
+        boolean isUpdated = userService.updateUser(id, updatedUser);
+        
+        if (isUpdated) {
+            Optional<User> user = userService.getUserById(id);
+            return user.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+        }
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with ID " + id + " not found.");
+    }  
 }
     
