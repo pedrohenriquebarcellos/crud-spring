@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.crud.web.fatec.api_fatec.domain.user.UserService;
 import com.crud.web.fatec.api_fatec.entities.User;
+import com.crud.web.fatec.api_fatec.exceptions.RecursoNaoEncontradoException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -59,8 +60,8 @@ public class UserController {
     public ResponseEntity<?> GetUserById(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
 
-        return user.<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User " + id + " not found"));
+        return user.map(ResponseEntity::ok)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário com ID " + id + " não encontrado"));
     }
 
     /**
