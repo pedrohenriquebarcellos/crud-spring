@@ -15,12 +15,16 @@ public class User {
     @Column(name = "email", nullable = false, length = 40)
     private String email;
 
+    @Column(nullable = false)
+    private String senha;
+
     public User() {}
     
-    public User(Long id, String name, String email) {
+    public User(Long id, String name, String email, String senha) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.senha = senha;
     }
 
     public Long getId() {
@@ -45,5 +49,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }

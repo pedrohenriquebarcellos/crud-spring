@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.crud.web.fatec.api_fatec.entities.User;
@@ -12,6 +13,9 @@ import com.crud.web.fatec.api_fatec.entities.User;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Buscar todos os usuários
@@ -29,6 +33,7 @@ public class UserService {
      * @return
      */
     public User createUser(User user) {
+        user.setSenha(passwordEncoder.encode(user.getSenha()));
         var userCreated = userRepository.save(user);
         return userCreated;
     }
