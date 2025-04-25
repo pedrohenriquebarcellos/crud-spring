@@ -14,7 +14,7 @@ import com.crud.web.fatec.api_fatec.security.JwtUtil;
 import com.crud.web.fatec.api_fatec.security.LoginDto;
 import com.crud.web.fatec.api_fatec.security.UsuarioDetailsService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,6 +31,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> autenticar(@RequestBody LoginDto authRequest) {
+        System.out.println("Username: " + authRequest.getUsername());
+        System.out.println("Password: " + authRequest.getPassword());
+
         var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
@@ -45,3 +48,5 @@ public class AuthController {
         return ResponseEntity.ok("Usuário logado: " + userDetails.getUsername());
     }
 }
+
+
